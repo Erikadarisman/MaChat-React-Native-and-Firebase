@@ -13,6 +13,7 @@ import {
 } from "native-base";
 import firebase from "firebase";
 import fire from "../backend/FireSetting";
+import userlogin from "./userlogin";
 
 export default class Register extends Component {
   constructor(props) {
@@ -48,6 +49,7 @@ export default class Register extends Component {
   loginSuccess = async () => {
     let user = firebase.auth().currentUser;
     await AsyncStorage.setItem("id_user", user.uid);
+    userlogin.id = user.uid;
     this.props.navigation.navigate("Home");
     alert("Welcome To Gochat!");
   };

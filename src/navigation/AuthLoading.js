@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View
 } from "react-native";
+import userlogin from '../screens/userlogin'
 
 
 export default class AuthLoading extends React.Component {
@@ -16,8 +17,8 @@ export default class AuthLoading extends React.Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    let User = await AsyncStorage.getItem("id_user");
-    this.props.navigation.navigate(User ? "App" : "Auth");
+    userlogin.id = await AsyncStorage.getItem('id_user');
+    this.props.navigation.navigate(userlogin.id ? "App" : "Auth");
   };
 
   render() {

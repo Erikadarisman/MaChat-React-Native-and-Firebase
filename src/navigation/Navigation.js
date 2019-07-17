@@ -6,15 +6,21 @@ import {
 } from "react-navigation";
 
 import Home from "../screens/Home";
+import AuthLoading from "./AuthLoading";
 import Profile from "../screens/Profile";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
-import AuthLoading from "./AuthLoading";
+import Chat from "../screens/Chat";
+import DetailChat from "../screens/DetailChat";
+import Maps from "../screens/Maps";
 
 const Stack = createStackNavigator(
   {
     Home: Home,
     Profile: Profile,
+    Chat: Chat,
+    DetailChat: DetailChat,
+    Maps: Maps,
   },
   {
     initialRouteName: "Home",
