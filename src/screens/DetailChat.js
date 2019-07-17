@@ -44,6 +44,7 @@ export default class ChatScreen extends Component {
       .database()
       .ref("messages")
       .child(userlogin.id)
+      .child(userlogin.name)
       .child(this.state.person.name)
       .on("child_added", value => {
         this.setState(prevState => {
@@ -68,6 +69,7 @@ export default class ChatScreen extends Component {
         .database()
         .ref("messages")
         .child(userlogin.id)
+        .child(userlogin.name)
         .child(this.state.person.name)
         .push().key;
 
@@ -80,10 +82,10 @@ export default class ChatScreen extends Component {
       };
 
       updates[
-        "messages/" + userlogin.id + "/" + this.state.person.name + "/" + msgId
+        "messages/" + userlogin.id + "/"+ userlogin.name + "/" + this.state.person.name + "/" + msgId
       ] = messages;
       updates[
-        "messages/" + this.state.person.name + "/" + userlogin.id + "/" + msgId
+        "messages/" + this.state.person.id + "/" + this.state.person.name + "/" + userlogin.name + "/" + msgId
       ] = messages;
 
       firebase
