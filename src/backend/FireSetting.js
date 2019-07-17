@@ -17,7 +17,13 @@ class Fire {
       appId: "1:270924704890:web:8aafab2d93435ebf"
     });
 
-    
+  login = async (users, success_callback, failed_callback) => {
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword(users.email, users.password)
+      .then(success_callback, failed_callback);
+  };
+
   createAccount = async data => {
     firebase
       .auth()
@@ -27,20 +33,24 @@ class Fire {
         console.log("user/");
         console.log(user);
         console.log(data);
-        
-        firebase.database().ref("users/").child(user.uid).set({
-              id: user.uid,
-              name: data.name,
-              no: data.no,
-              status: "-",
-              imageUrl: "-"
-            })
-            .then(() => {
-              console.log("INSERTED!!!");
-            })
-            .catch(error => {
-              console.log(error);
-            });
+
+        firebase
+          .database()
+          .ref("users/")
+          .child(user.uid)
+          .set({
+            id: user.uid,
+            name: data.name,
+            no: data.no,
+            status: "-",
+            imageUrl: "-"
+          })
+          .then(() => {
+            console.log("INSERTED!!!");
+          })
+          .catch(error => {
+            console.log(error);
+          });
       })
       .catch(error => {
         console.log(error);

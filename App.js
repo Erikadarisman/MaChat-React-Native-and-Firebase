@@ -1,6 +1,6 @@
 import React from "react";
 import { createAppContainer } from "react-navigation";
-import Stack from "./src/Navigation";
+import Stack from "./src/navigation/Navigation";
 
 const AppContainer = createAppContainer(Stack);
 

@@ -42,7 +42,7 @@ export default class Register extends Component {
       <View style={{ flex: 1 }}>
         <Header>
           <Body>
-            <Text style={{ color: "white" }}>Register</Text>
+            <Text style={{ color: "white" }}>Sign Up</Text>
           </Body>
         </Header>
         <View
@@ -105,7 +105,7 @@ export default class Register extends Component {
                 }}
               >
                 <Button onPress={this.registrasi}>
-                  <Text>Registrasi</Text>
+                  <Text>Sign Up</Text>
                 </Button>
               </View>
             </View>
