@@ -65,7 +65,7 @@ class App extends Component {
     return (
       <TouchableOpacity
         style={{ padding: 10, borderBottomColor: "#ccc", borderBottomWidth: 1 }}
-        onPress={() => this.props.navigation.navigate("DetailChat", item)}
+        onPress={() => this.props.navigation.navigate("Chatty", item)}
       >
         <Text style={{ fontSize: 35 }}>{item.name}</Text>
       </TouchableOpacity>

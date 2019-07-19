@@ -43,7 +43,9 @@ class Fire {
             name: data.name,
             no: data.no,
             status: "-",
-            imageUrl: "-"
+            imageUrl: "-",
+            latitude: "",
+            longitude: "",
           })
           .then(() => {
             console.log("INSERTED!!!");

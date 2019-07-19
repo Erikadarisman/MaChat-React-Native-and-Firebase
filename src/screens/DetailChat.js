@@ -26,7 +26,7 @@ export default class ChatScreen extends Component {
         password: props.navigation.getParam("password"),
         no: props.navigation.getParam("no"),
         imageUrl: props.navigation.getParam("imageUrl"),
-        status: props.navigation.getParam("status"),
+        status: props.navigation.getParam("status")
       },
       textMessage: "",
       messageList: []
@@ -62,9 +62,6 @@ export default class ChatScreen extends Component {
   // logic of sending messages
   sendMessage = async () => {
     if (this.state.textMessage.length > 0) {
-      // console.log("user.phone : " + user.phone);
-      console.log("this.state.person.phone: " + JSON.stringify(this.state));
-
       let msgId = firebase
         .database()
         .ref("messages")
@@ -82,10 +79,24 @@ export default class ChatScreen extends Component {
       };
 
       updates[
-        "messages/" + userlogin.id + "/"+ userlogin.name + "/" + this.state.person.name + "/" + msgId
+        "messages/" +
+          userlogin.id +
+          "/" +
+          userlogin.name +
+          "/" +
+          this.state.person.name +
+          "/" +
+          msgId
       ] = messages;
       updates[
-        "messages/" + this.state.person.id + "/" + this.state.person.name + "/" + userlogin.name + "/" + msgId
+        "messages/" +
+          this.state.person.id +
+          "/" +
+          this.state.person.name +
+          "/" +
+          userlogin.name +
+          "/" +
+          msgId
       ] = messages;
 
       firebase
