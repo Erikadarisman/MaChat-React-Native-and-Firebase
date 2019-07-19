@@ -18,7 +18,6 @@ import userlogin from "./userlogin";
 import { Button } from "native-base";
 import FooterButton from "../components/FooterButton";
 
-
 const { width, height } = Dimensions.get("window");
 
 const CARD_HEIGHT = height / 4;
@@ -31,10 +30,20 @@ export default class maps extends Component {
       longitude: "",
       latitude: "",
       data: [],
-      modalVisible: false
+      modalVisible: false,
+      modal: ""
     }),
       this.getLocation();
   }
+
+  chat = () => {
+    let chat = {
+      id: this.state.id,
+      name: this.state.name
+    };
+    this.props.navigation.goBack(),
+    this.props.navigation.navigate("Chat", chat), this.setModalVisible(false);
+  };
 
   getLocation = async () => {
     await Geolocation.getCurrentPosition(
@@ -57,8 +66,7 @@ export default class maps extends Component {
         .ref("users/" + userlogin.id)
         .update({
           latitude: this.state.latitude,
-          longitude: this.state.longitude,
-          status: "online"
+          longitude: this.state.longitude
         });
     }
   };
@@ -71,9 +79,12 @@ export default class maps extends Component {
     } else {
       this.setState({
         modalVisible: visible,
-        nama: value.name,
+        name: value.name,
         no: value.no,
-        status: value.status
+        status: value.status,
+        id: value.id,
+        imageUrl: value.imageUrl,
+        chat: { id: value.id, name: value.name }
       });
     }
   }
@@ -159,6 +170,7 @@ export default class maps extends Component {
                       }}
                       title={item.name}
                       description="in here"
+                      onPress={() => this.setModalVisible(true, item)}
                     />
                   );
                 }
@@ -184,13 +196,16 @@ export default class maps extends Component {
                     <View style={styles.imageModal}>
                       <View style={{ flex: 2 }}>
                         <Image
-                          source={{ uri: "https://i.imgur.com/sNam9iJ.jpg" }}
+                          source={{ uri: this.state.imageUrl }}
                           style={styles.images}
                         />
-                        <Text style={styles.textModal}>
-                          {this.state.status}
-                        </Text>
-                        <Text style={{ fontSize: 15, textAlign: "center" }}>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            textAlign: "center",
+                            fontWeight: "bold"
+                          }}
+                        >
                           {this.state.name}
                         </Text>
                         <View
@@ -198,17 +213,34 @@ export default class maps extends Component {
                             flexDirection: "row",
                             width: "100%",
                             paddingLeft: 20,
-                            paddingRight: 20
+                            paddingRight: 20,
+                            marginTop: 5
                           }}
                         >
-                          <Button success style={{ flex: 1, marginRight: 5 }}>
+                          <Button
+                            onPress={() => {
+                              this.props.navigation.navigate(
+                                "Chat",
+                                this.state.chat
+                              ),
+                                this.setModalVisible(false);
+                            }}
+                            success
+                            style={{ flex: 1, marginRight: 5 }}
+                          >
                             <Text
                               style={{ textAlign: "center", width: "100%" }}
                             >
                               Chat
                             </Text>
                           </Button>
-                          <Button warning style={{ flex: 1, marginLeft: 5 }}>
+                          <Button
+                            onPress={() => {
+                              this.chat;
+                            }}
+                            warning
+                            style={{ flex: 1, marginLeft: 5 }}
+                          >
                             <Text
                               style={{ textAlign: "center", width: "100%" }}
                             >
@@ -222,66 +254,8 @@ export default class maps extends Component {
                 </View>
               </Modal>
             </View>
-            <Animated.ScrollView
-              horizontal
-              scrollEventThrottle={1}
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={CARD_WIDTH}
-              onScroll={Animated.event(
-                [
-                  {
-                    nativeEvent: {
-                      contentOffset: {
-                        x: this.animation
-                      }
-                    }
-                  }
-                ],
-                { useNativeDriver: true }
-              )}
-              style={styles.scrollView}
-              contentContainerStyle={styles.endPadding}
-            >
-              {this.state.data.map((marker, index) => {
-                if (marker.id !== userlogin.id) {
-                  return (
-                    <TouchableOpacity style={{marginBottom:30}}
-                      onPress={() => this.setModalVisible(true, marker)}
-                    >
-                      <View style={styles.card} key={index}>
-                        <Image
-                          source={{ uri: "https://i.imgur.com/sNam9iJ.jpg" }}
-                          style={styles.cardImage}
-                          resizeMode="cover"
-                        />
-                        <View style={styles.textContent}>
-                          <Text numberOfLines={1} style={styles.cardtitle}>
-                            {marker.name}
-                          </Text>
-                          <Text
-                            numberOfLines={1}
-                            style={styles.cardDescription}
-                          >
-                            {marker.no}
-                          </Text>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }
-              })}
-            </Animated.ScrollView>
-            <TouchableOpacity
-              style={styles.fab}
-              onPress={() => this.props.navigation.navigate("Chat")}
-            >
-              <Icon name="user" size={25} color="#5ba4e5" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.fabRight} onPress={this.exit}>
-              <Icon name="logout" size={25} color="#F3190B" />
-            </TouchableOpacity>
           </View>
-          <FooterButton/>
+          <FooterButton />
         </View>
       );
     }
@@ -298,7 +272,7 @@ export default class maps extends Component {
             }}
           />
         </View>
-        <FooterButton/>
+        <FooterButton />
       </View>
     );
   }
@@ -360,10 +334,10 @@ const styles = StyleSheet.create({
     paddingRight: width - CARD_WIDTH
   },
   card: {
-    padding: 10,
+    padding: 5,
     elevation: 2,
     backgroundColor: "#FFF",
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     shadowColor: "#000",
     shadowRadius: 5,
     shadowOpacity: 0.3,
@@ -377,7 +351,8 @@ const styles = StyleSheet.create({
     flex: 3,
     width: "100%",
     height: "100%",
-    alignSelf: "center"
+    alignSelf: "center",
+    borderRadius: 10
   },
   textContent: {
     flex: 1
@@ -385,7 +360,8 @@ const styles = StyleSheet.create({
   cardtitle: {
     fontSize: 12,
     marginTop: 5,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    textAlign: "center"
   },
   cardDescription: {
     fontSize: 12,

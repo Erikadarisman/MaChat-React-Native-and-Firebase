@@ -13,7 +13,8 @@ import Register from "../screens/Register";
 import Chat from "../screens/Chat";
 import DetailChat from "../screens/DetailChat";
 import Maps from "../screens/Maps";
-import Chatty from "../screens/Chatty";
+import Contact from "../screens/Contact";
+import Friend from "../screens/Friend";
 
 const Stack = createStackNavigator(
   {
@@ -22,10 +23,11 @@ const Stack = createStackNavigator(
     Chat: Chat,
     DetailChat: DetailChat,
     Maps: Maps,
-    Chatty: Chatty,
+    Friend: Friend,
+    Contact: Contact,
   },
   {
-    initialRouteName: "Maps",
+    initialRouteName: "Profile",
     headerMode: "none"
   }
 );

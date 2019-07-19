@@ -50,8 +50,8 @@ export default class Register extends Component {
     let user = firebase.auth().currentUser;
     await AsyncStorage.setItem("id_user", user.uid);
     userlogin.id = user.uid;
-    this.props.navigation.navigate("Home");
-    alert("Welcome To Gochat!");
+    this.props.navigation.navigate("Profile");
+    alert("Welcome To MaChat!");
   };
 
   render() {
@@ -90,6 +90,7 @@ export default class Register extends Component {
                       value={this.state.password}
                       onChangeText={this.handleChange("password")}
                       placeholder="Password"
+                      secureTextEntry={true}
                     />
                   </Item>
                 </Form>

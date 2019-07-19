@@ -1,116 +1,102 @@
-import React, { Fragment, Component } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  FlatList,
-  AsyncStorage,
-  Alert,
-  SafeAreaView
-} from "react-native";
-import {
-  Form,
-  Item,
-  Input,
-  Label,
-  Button,
-  Content,
-  Container
-} from "native-base";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React, { Component } from "react";
 import firebase from "firebase";
-// import data from user logins
-import userlogin from "./userlogin";
-class App extends Component {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "list Chats",
-      headerRight: (
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Image
-            style={{ width: 32, height: 32, marginRight: 15 }}
-            // source={require("../images/maintain.jpg")}
-          />
-        </TouchableOpacity>
-      )
+import { GiftedChat } from "react-native-gifted-chat";
+import user from "./userlogin";
+
+export default class Chatty extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      uid: this.props.navigation.state.params.id,
+      name: this.props.navigation.state.params.name,
+      text: "",
+      messagesList: []
     };
-  };
-
-  state = {
-    users: []
-  };
-
-  componentWillMount() {
-    let dbRef = firebase.database().ref("users");
-    dbRef.on("child_added", val => {
-      let person = val.val();
-      person.id = val.key;
-
-      if (person.id === userlogin.id) {
-        userlogin.name = person.name;
-        userlogin.no = person.no;
-      } else {
-        this.setState(prevState => {
-          return {
-            users: [...prevState.users, person]
-          };
-        });
-      }
-    });
   }
 
-  renderRow = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={{ padding: 10, borderBottomColor: "#ccc", borderBottomWidth: 1 }}
-        onPress={() => this.props.navigation.navigate("Chatty", item)}
-      >
-        <Text style={{ fontSize: 35 }}>{item.name}</Text>
-      </TouchableOpacity>
-    );
+  async componentWillMount() {
+    console.log("xxxx");
+    console.log(user);
+    console.log(this.state);
+    
+    await firebase
+      .database()
+      .ref("messages")
+      .child(user.id)
+      .child(user.name)
+      .child(this.state.name)
+      .on("child_added", value => {
+        
+        this.setState(previousState => {
+          return {
+            messagesList: GiftedChat.append(
+              previousState.messagesList, 
+              value.val()
+            )
+          };
+        });
+        console.log("this.state.messagesList");
+        console.log(this.state.messagesList);
+          
+      });
+  }
+  sendMessage = async () => {
+    if (this.state.text.length > 0) {
+      let msgId = firebase
+        .database()
+        .ref("messages")
+        .child(user.id)
+        .child(user.name)
+        .child(this.state.name)
+        .push().key;
+      let updates = {};
+      let message = {
+        _id: msgId,
+        text: this.state.text,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        user: {
+            _id: user.id,
+            avatar: user.imageUrl
+        }
+      };
+      updates[
+        "messages/" +
+          user.id +
+          "/" +
+          user.name +
+          "/" +
+          this.state.name +
+          "/" +
+          msgId
+      ] = message;
+      updates[
+        "messages/" +
+          this.state.uid +
+          "/" +
+          this.state.name +
+          "/" +
+          user.name +
+          "/" +
+          msgId
+      ] = message;
+      firebase
+        .database()
+        .ref()
+        .update(updates);
+      this.setState({ text: "" });
+    }
   };
-
   render() {
     return (
-      <Fragment>
-        {/* <Container style={styles.container}> */}
-        {/* <Text style={{ fontSize: 50, color: "#d4d6d9", marginBottom: 30 }}>Your Username: {user.phone}</Text>
-                     <TouchableOpacity onPress={() => this._logout()}>
-                    <Text style={{ fontSize: 25, color: "#ebbcb5", marginBottom: 30 }}>Logout</Text>
-                </TouchableOpacity>
-                     */}
-
-        <SafeAreaView>
-          <FlatList
-            data={this.state.users}
-            renderItem={this.renderRow}
-            keyExtractor={item => item.phone}
-          />
-        </SafeAreaView>
-
-        {/* </Container> */}
-      </Fragment>
+      <GiftedChat
+        text={this.state.text}
+        messages={this.state.messagesList}
+        onSend={this.sendMessage}
+        user={{
+          _id: user.id
+        }}
+        onInputTextChanged={value => this.setState({ text: value })}
+      />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%"
-  },
-  contents: {
-    alignSelf: "center",
-    margin: "auto"
-  },
-  text: {
-    width: "200"
-  }
-});
-
-export default App;

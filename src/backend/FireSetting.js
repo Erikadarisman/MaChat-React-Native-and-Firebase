@@ -30,9 +30,6 @@ class Fire {
       .createUserWithEmailAndPassword(data.email, data.password)
       .then(() => {
         let user = firebase.auth().currentUser;
-        console.log("user/");
-        console.log(user);
-        console.log(data);
 
         firebase
           .database()
@@ -40,10 +37,11 @@ class Fire {
           .child(user.uid)
           .set({
             id: user.uid,
+            email:user.email,
             name: data.name,
             no: data.no,
+            imageUrl: data.imageUrl,
             status: "-",
-            imageUrl: "-",
             latitude: "",
             longitude: "",
           })

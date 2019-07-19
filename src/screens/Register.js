@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, Picker } from "react-native";
 import {
   Container,
   Header,
@@ -19,7 +19,10 @@ export default class Register extends Component {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      name: "",
+      no: "",
+      imageUrl:""
     };
   }
 
@@ -32,9 +35,20 @@ export default class Register extends Component {
       email: this.state.email,
       password: this.state.password,
       name: this.state.name,
-      no: this.state.no
+      no: this.state.no,
+      imageUrl: this.state.imageUrl
     };
     Fire.shared.createAccount(dataReg);
+    this.props.navigation.navigate("Login");
+  };
+
+  regFailed = () => {
+    alert("Something Wrong, pls try again!");
+  };
+
+  regSuccess = async () => {
+    this.props.navigation.navigate("Login");
+    alert("Registrasi Succes");
   };
 
   render() {
@@ -72,6 +86,14 @@ export default class Register extends Component {
                       placeholder="Name"
                     />
                   </Item>
+                  <Item>
+                    <Input
+                      value={this.state.imageUrl}
+                      onChangeText={this.handleChange("imageUrl")}
+                      placeholder="Link Image"
+                    />
+                  </Item>
+                  
                   <Item>
                     <Input
                       value={this.state.no}

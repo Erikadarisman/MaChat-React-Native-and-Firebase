@@ -6,6 +6,7 @@ const AppContainer = createAppContainer(Stack);
 
 export default class App extends React.Component {
   render() {
+    console.disableYellowBox = true;
     return (
       // <StoreProvider store={store}>
           <AppContainer />
