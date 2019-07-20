@@ -12,16 +12,10 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
-import Icon from "react-native-vector-icons/AntDesign";
 import firebase from "firebase";
 import userlogin from "./userlogin";
-import { Button } from "native-base";
+import { Button, Icon } from "native-base";
 import FooterButton from "../components/FooterButton";
-
-const { width, height } = Dimensions.get("window");
-
-const CARD_HEIGHT = height / 4;
-const CARD_WIDTH = CARD_HEIGHT - 50;
 
 export default class maps extends Component {
   constructor(props) {
@@ -41,8 +35,16 @@ export default class maps extends Component {
       id: this.state.id,
       name: this.state.name
     };
-    this.props.navigation.goBack(),
     this.props.navigation.navigate("Chat", chat), this.setModalVisible(false);
+  };
+
+  profile = () => {
+    let Profile = {
+      id: this.state.id,
+      name: this.state.name
+    };
+    this.props.navigation.navigate("Friend", Profile),
+      this.setModalVisible(false);
   };
 
   getLocation = async () => {
@@ -101,47 +103,15 @@ export default class maps extends Component {
       .on("value", data => {
         let values = data.val();
         if (values) {
-          const messageList = Object.keys(values).map(key => ({
+          const value = Object.keys(values).map(key => ({
             ...values[key]
           }));
           this.setState({
-            data: messageList
+            data: value
           });
         }
       });
-
-    this.animation.addListener(({ value }) => {
-      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
-      if (index >= this.state.data.length) {
-        index = this.state.data.length - 1;
-      }
-      if (index <= 0) {
-        index = 0;
-      }
-
-      clearTimeout(this.regionTimeout);
-      this.regionTimeout = setTimeout(() => {
-        if (this.index !== index) {
-          this.index = index;
-          const coordinate = this.state.data[index];
-          this.map.animateToRegion(
-            {
-              latitude: coordinate.latitude,
-              longitude: coordinate.longitude,
-              latitudeDelta: 0.02864195044303443,
-              longitudeDelta: 0.020142817690068
-            },
-            350
-          );
-        }
-      }, 10);
-    });
   }
-
-  exit = async () => {
-    await AsyncStorage.removeItem("id_user");
-    this.props.navigation.navigate("Login");
-  };
 
   render() {
     if (this.state.latitude) {
@@ -159,6 +129,15 @@ export default class maps extends Component {
                 longitudeDelta: 0.020142817690068
               }}
             >
+              <Marker
+                pinColor={"green"}
+                coordinate={{
+                  latitude: this.state.latitude,
+                  longitude: this.state.longitude
+                }}
+                title="You"
+                description="in here"
+              />
               {this.state.data.map(item => {
                 if (item.longitude == "" || item.id == userlogin.id) {
                 } else {
@@ -194,16 +173,25 @@ export default class maps extends Component {
                     style={styles.modelstyle}
                   >
                     <View style={styles.imageModal}>
-                      <View style={{ flex: 2 }}>
+                      <View
+                        style={{
+                          flex: 2,
+                          backgroundColor: "#1F6097",
+                          borderRadius: 5,
+                          padding: 5
+                        }}
+                      >
                         <Image
                           source={{ uri: this.state.imageUrl }}
                           style={styles.images}
                         />
                         <Text
                           style={{
-                            fontSize: 15,
+                            fontSize: 20,
                             textAlign: "center",
-                            fontWeight: "bold"
+                            fontWeight: "bold",
+                            color: "#FAFAFA",
+                            padding: 5
                           }}
                         >
                           {this.state.name}
@@ -214,38 +202,40 @@ export default class maps extends Component {
                             width: "100%",
                             paddingLeft: 20,
                             paddingRight: 20,
-                            marginTop: 5
+                            marginTop: 5,
+                            marginBottom: 15
                           }}
                         >
                           <Button
                             onPress={() => {
-                              this.props.navigation.navigate(
-                                "Chat",
-                                this.state.chat
-                              ),
-                                this.setModalVisible(false);
+                              this.chat();
                             }}
-                            success
-                            style={{ flex: 1, marginRight: 5 }}
+                            primary
+                            light
+                            style={{
+                              flex: 1,
+                              marginRight: 5,
+                              justifyContent: "center"
+                            }}
                           >
-                            <Text
-                              style={{ textAlign: "center", width: "100%" }}
-                            >
-                              Chat
-                            </Text>
+                            <Icon
+                              name="chatboxes"
+                              style={{ color: "#1F6097" }}
+                            />
                           </Button>
                           <Button
                             onPress={() => {
-                              this.chat;
+                              this.profile();
                             }}
-                            warning
-                            style={{ flex: 1, marginLeft: 5 }}
+                            success
+                            light
+                            style={{
+                              flex: 1,
+                              marginLeft: 5,
+                              justifyContent: "center"
+                            }}
                           >
-                            <Text
-                              style={{ textAlign: "center", width: "100%" }}
-                            >
-                              Profile
-                            </Text>
+                            <Icon name="person" style={{ color: "#1F6097" }} />
                           </Button>
                         </View>
                       </View>
@@ -290,7 +280,7 @@ const styles = StyleSheet.create({
   },
   imageModal: {
     width: "80%",
-    height: 180,
+    height: "30%",
     textAlign: "center",
     alignSelf: "center",
     position: "relative",
@@ -330,23 +320,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingVertical: 10
   },
-  endPadding: {
-    paddingRight: width - CARD_WIDTH
-  },
-  card: {
-    padding: 5,
-    elevation: 2,
-    backgroundColor: "#FFF",
-    marginHorizontal: 5,
-    shadowColor: "#000",
-    shadowRadius: 5,
-    shadowOpacity: 0.3,
-    shadowOffset: { x: 2, y: -2 },
-    height: CARD_HEIGHT,
-    width: CARD_WIDTH,
-    overflow: "hidden",
-    borderRadius: 10
-  },
+
   cardImage: {
     flex: 3,
     width: "100%",
@@ -366,50 +340,5 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 12,
     color: "#444"
-  },
-  markerWrap: {
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  marker: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(130,4,150, 0.9)"
-  },
-  ring: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "rgba(130,4,150, 0.3)",
-    position: "absolute",
-    borderWidth: 1,
-    borderColor: "rgba(130,4,150, 0.5)"
-  },
-  fab: {
-    position: "absolute",
-    width: 58,
-    height: 57,
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-    left: 10,
-    top: 20,
-    backgroundColor: "#FFFCFC",
-    borderRadius: 50,
-    elevation: 3
-  },
-  fabRight: {
-    position: "absolute",
-    width: 58,
-    height: 57,
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-    right: 10,
-    top: 20,
-    backgroundColor: "#FFFCFC",
-    borderRadius: 50,
-    elevation: 3
   }
 });
