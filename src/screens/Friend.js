@@ -13,7 +13,7 @@ import userlogin from "./userlogin";
 
 import firebase from "firebase";
 
-export default class Profile extends Component {
+export default class Friend extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,11 +25,9 @@ export default class Profile extends Component {
   async componentDidMount() {
     await firebase
       .database()
-      .ref("users/" + userlogin.id)
+      .ref("users/" + this.props.navigation.state.params.id)
       .on("value", data => {
         this.setState({ user: data.val(), loading: false });
-        userlogin.name = data.val().name;
-        userlogin.imageUrl = data.val().imageUrl;
       });
   }
   exit = async () => {
@@ -90,14 +88,6 @@ export default class Profile extends Component {
             </View>
           </View>
         )}
-        <TouchableOpacity style={styles.fabRight} onPress={this.exit}>
-          <Icon
-            type="AntDesign"
-            name="logout"
-            size={25}
-            style={{ color: "red" }}
-          />
-        </TouchableOpacity>
         <FooterButton />
       </View>
     );
@@ -114,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     right: 10,
     top: 20,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFCFC",
     borderRadius: 50,
     elevation: 3
   },

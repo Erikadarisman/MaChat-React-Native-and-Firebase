@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, Picker } from "react-native";
 import {
   Container,
   Header,
@@ -12,16 +12,51 @@ import {
   Icon,
   Body
 } from "native-base";
+import Fire from "../backend/FireSetting";
 
 export default class Register extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      password: "",
+      name: "",
+      no: "",
+      imageUrl:""
+    };
+  }
+
+  handleChange = key => val => {
+    this.setState({ [key]: val });
+  };
+
+  registrasi = () => {
+    let dataReg = {
+      email: this.state.email,
+      password: this.state.password,
+      name: this.state.name,
+      no: this.state.no,
+      imageUrl: this.state.imageUrl
+    };
+    Fire.shared.createAccount(dataReg);
+    this.props.navigation.navigate("Login");
+  };
+
+  regFailed = () => {
+    alert("Something Wrong, pls try again!");
+  };
+
+  regSuccess = async () => {
+    this.props.navigation.navigate("Login");
+    alert("Registrasi Succes");
+  };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
         <Header>
           <Body>
-            <Text style={{ color:"white" }}>
-              Register
-            </Text>
+            <Text style={{ color: "white" }}>Sign Up</Text>
           </Body>
         </Header>
         <View
@@ -45,16 +80,43 @@ export default class Register extends Component {
               <View>
                 <Form>
                   <Item>
-                    <Input placeholder="Name" />
+                    <Input
+                      value={this.state.name}
+                      onChangeText={this.handleChange("name")}
+                      placeholder="Name"
+                    />
                   </Item>
                   <Item>
-                    <Input placeholder="No" />
+                    <Input
+                      value={this.state.imageUrl}
+                      onChangeText={this.handleChange("imageUrl")}
+                      placeholder="Link Image"
+                    />
+                  </Item>
+                  
+                  <Item>
+                    <Input
+                      value={this.state.no}
+                      onChangeText={this.handleChange("no")}
+                      placeholder="No. Phone"
+                      keyboardType="number-pad"
+                    />
                   </Item>
                   <Item>
-                    <Input placeholder="Email" />
+                    <Input
+                      value={this.state.email}
+                      onChangeText={this.handleChange("email")}
+                      placeholder="Email"
+                      keyboardType="email-address"
+                    />
                   </Item>
                   <Item>
-                    <Input placeholder="Password" />
+                    <Input
+                      value={this.state.password}
+                      onChangeText={this.handleChange("password")}
+                      secureTextEntry={true}
+                      placeholder="Password"
+                    />
                   </Item>
                 </Form>
               </View>
@@ -64,8 +126,8 @@ export default class Register extends Component {
                   marginTop: 15
                 }}
               >
-                <Button>
-                  <Text>Login</Text>
+                <Button onPress={this.registrasi}>
+                  <Text>Sign Up</Text>
                 </Button>
               </View>
             </View>
